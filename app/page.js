@@ -1,20 +1,21 @@
-// app/page.js
 "use client";
 
 import Navbar from "../component/navbar";
 import FooterMenu from "../component/FooterMenu";
+import HomePageContent from "../component/HomePageContent"; 
+// ⬆ We will create this component next
 
 export default function Home() {
   return (
     <>
       <Navbar />
 
-      <main className="min-h-[70vh] p-6">
-        <h1 className="text-2xl font-bold mb-4">Your Main Page Content</h1>
-        <p>Put your content here — Home page only.</p>
+      <main className="pt-20">
+        {/* Full Innovative Homepage UI */}
+        <HomePageContent />
       </main>
 
-      <FooterMenu />
+
     </>
   );
 }

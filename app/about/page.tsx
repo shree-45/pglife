@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   ArrowRight,
   Phone,
@@ -10,14 +10,112 @@ import {
   Shield,
   Clock,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
-/**
- * Single-file About Page for PG LIFE
- * Drop into app/about/page.js (or app/page.js).
- * Edit images, emails, phone numbers as needed.
- */
+/* Carousel component */
+function Carousel({
+  images = [], // array of { src, alt }
+  interval = 4000,
+  showDots = true,
+  rounded = true,
+}) {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const length = images.length;
+  const timerRef = useRef(null);
 
+  useEffect(() => {
+    if (length === 0) return;
+    if (!paused) {
+      timerRef.current = setInterval(() => {
+        setIdx((i) => (i + 1) % length);
+      }, interval);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [paused, interval, length]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx, length]);
+
+  function prev() {
+    setIdx((i) => (i - 1 + length) % length);
+  }
+  function next() {
+    setIdx((i) => (i + 1) % length);
+  }
+
+  if (length === 0) return null;
+
+  return (
+    <div
+      className={`relative w-full ${rounded ? "rounded-lg overflow-hidden" : ""}`}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      aria-roledescription="carousel"
+    >
+      {/* Slides */}
+      <div className="relative h-64 md:h-80">
+        {images.map((img, i) => (
+          <img
+            key={img.src + i}
+            src={img.src}
+            alt={img.alt || `slide-${i + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+              i === idx ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+            }`}
+            loading="lazy"
+          />
+        ))}
+      </div>
+{/* Prev / Next buttons */}
+<button
+  aria-label="Previous slide"
+  onClick={prev}
+  className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white p-2 rounded-full shadow-md"
+  type="button"
+>
+  <ChevronLeft size={18} />
+</button>
+
+<button
+  aria-label="Next slide"
+  onClick={next}
+  className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white p-2 rounded-full shadow-md"
+  type="button"
+>
+  <ChevronRight size={18} />
+</button>
+
+
+      {/* Dots */}
+      {showDots && (
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex gap-2">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => setIdx(i)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                i === idx ? "bg-yellow-400 scale-125" : "bg-white/60"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* Animated number from your original code */
 function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }) {
   const [val, setVal] = useState(0);
   useEffect(() => {
@@ -43,7 +141,15 @@ function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }) {
   );
 }
 
+/* Main About page */
 export default function AboutPage() {
+  // images used by carousel (place these inside public/images/)
+  const heroImages = [
+    { src: "/images/pg1.jpeg", alt: "PG room 1" },
+    { src: "/images/pg2.jpeg", alt: "PG room 2" },
+    { src: "/images/pg3.jpeg", alt: "PG room 3" },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* HERO */}
@@ -81,15 +187,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="md:w-1/3">
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <img
-                src="/images/pg-life-hero.jpg"
-                alt="PG rooms preview"
-                className="w-full h-64 object-cover"
-                loading="lazy"
-              />
-            </div>
+          {/* Carousel placed on the right */}
+          <div className="md:w-1/3 w-full">
+            <Carousel images={heroImages} interval={4500} showDots rounded={true} />
           </div>
         </div>
       </section>
@@ -185,19 +285,19 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
             {
-              name: "Ananya Roy",
+              name: "Sagnik Rudra",
               role: "Co-Founder & CEO",
-              img: "/images/team/ananya.jpg",
+              img: "/images/sagnik.jpeg",
             },
             {
-              name: "Rohit Sen",
+              name: "Our selling Item",
               role: "Head Product",
-              img: "/images/team/rohit.jpg",
+              img: "/images/rohit.png",
             },
             {
-              name: "Meera Das",
+              name: "Partnerships",
               role: "Head Partnerships",
-              img: "/images/team/meera.jpg",
+              img: "/images/meera.png",
             },
           ].map((m, i) => (
             <div key={i} className="bg-white p-6 rounded-lg text-center shadow">
@@ -244,6 +344,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      </div>
+    </div>
   );
 }
