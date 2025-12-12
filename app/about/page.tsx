@@ -12,20 +12,36 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+/* --------- Types --------- */
+type Slide = {
+  src: string;
+  alt?: string;
+};
+
 /* ---------- Carousel ---------- */
-function Carousel({ images = [], interval = 4000, showDots = true, rounded = true }) {
-  const [idx, setIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const len = images.length;
+function Carousel({
+  images = [],
+  interval = 4000,
+  showDots = true,
+  rounded = true,
+}: {
+  images?: Slide[];
+  interval?: number;
+  showDots?: boolean;
+  rounded?: boolean;
+}) {
+  const [idx, setIdx] = useState<number>(0);
+  const [paused, setPaused] = useState<boolean>(false);
+  const len = images?.length ?? 0;
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!len) return;
     if (!paused) {
-      timerRef.current = window.setInterval(() => setIdx((i) => (i + 1) % len), interval) as unknown as number;
+      timerRef.current = window.setInterval(() => setIdx((i) => (i + 1) % len), interval);
     }
     return () => {
-      if (timerRef.current) {
+      if (timerRef.current !== null) {
         window.clearInterval(timerRef.current);
         timerRef.current = null;
       }
@@ -99,7 +115,7 @@ function Carousel({ images = [], interval = 4000, showDots = true, rounded = tru
 
 /* ---------- Animated Number ---------- */
 function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }: { to?: number; suffix?: string; duration?: number }) {
-  const [val, setVal] = useState(0);
+  const [val, setVal] = useState<number>(0);
   const rafRef = useRef<number | null>(null);
   const startRef = useRef<number | null>(null);
 
@@ -116,7 +132,7 @@ function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }: { to?: number;
     };
     rafRef.current = requestAnimationFrame(step);
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     };
   }, [to, duration]);
@@ -131,7 +147,7 @@ function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }: { to?: number;
 
 /* ---------- AboutClient (main client UI) ---------- */
 export default function AboutClient() {
-  const heroImages = [
+  const heroImages: Slide[] = [
     { src: "/images/pg1.jpeg", alt: "PG room 1" },
     { src: "/images/pg2.jpeg", alt: "PG room 2" },
     { src: "/images/pg3.jpeg", alt: "PG room 3" },
@@ -197,7 +213,7 @@ export default function AboutClient() {
           </div>
         </div>
       </section>
-<nav></nav>
+
       {/* mission + how we work: glass split cards */}
       <section id="our-mission" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-2 gap-6">
