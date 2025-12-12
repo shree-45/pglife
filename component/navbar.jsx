@@ -1,89 +1,116 @@
+// component/navbar.jsx
 "use client";
 
 import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
-import Link from "next/link";   // ✅ ADD THIS
+import Link from "next/link";
+import { Menu, X, Search } from "lucide-react";
 
-const Navbar = () => {
+export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  const navLinks = [
+    { href: "/listings", label: "Listings" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+    { href: "/signup", label: "Sign Up" },
+    { href: "/login", label: "Login" },
+  ];
+
   return (
-    <nav className="w-full bg-white shadow-md fixed top-0 left-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        
-        {/* Logo */}
-        <h1 className="text-2xl font-bold text-blue-600">PG LIFE</h1>
+    <>
+      <nav className="fixed inset-x-0 top-0 z-50">
+        <div className="backdrop-blur-md bg-gradient-to-r from-white/4 via-white/2 to-white/3 border-b border-white/6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              {/* Logo */}
+              <div className="flex items-center gap-3">
+                <Link href="/" className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-300 to-amber-400 flex items-center justify-center text-black font-bold shadow-sm">
+                    PG
+                  </div>
+                  <div className="hidden sm:block">
+                    <div className="text-white font-bold leading-none">PG LIFE</div>
+                    <div className="text-xs text-white/60 -mt-0.5">Find calm, curated stays</div>
+                  </div>
+                </Link>
+              </div>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-8 text-lg font-medium">
-          <li>
-            <Link href="/" className="hover:text-blue-600">Home</Link>
-          </li>
+              {/* Desktop center links */}
+              <div className="hidden md:flex md:items-center md:space-x-6">
+                {navLinks.slice(0, 3).map((l) => (
+                  <Link key={l.href} href={l.href} className="text-sm text-white/85 hover:text-white transition">
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
 
-          <li>
-            <Link href="/about" className="hover:text-blue-600">About</Link>
-          </li>
+              {/* Right actions */}
+              <div className="flex items-center gap-3">
+                <button
+                  aria-label="Search"
+                  className="hidden md:inline-flex items-center gap-2 bg-white/6 backdrop-blur-sm px-3 py-2 rounded-full text-white/90 text-sm border border-white/6 hover:scale-102 transition"
+                >
+                  <Search size={16} /> <span className="hidden sm:inline">Search</span>
+                </button>
 
-          <li>
-            <Link href="/contact" className="hover:text-blue-600">Contact</Link>
-          </li>
+                <div className="hidden md:flex items-center gap-2">
+                  <Link href="/signup" className="px-3 py-2 rounded-full bg-amber-300 text-black font-semibold text-sm shadow-sm hover:opacity-95 transition">
+                    Get started
+                  </Link>
+                </div>
 
-          <li>
-            <Link href="/signup" className="hover:text-blue-600">Sign Up</Link>
-          </li>
+                <button
+                  className="md:hidden p-2 rounded-lg text-white/90 hover:bg-white/6"
+                  onClick={() => setOpen((s) => !s)}
+                  aria-label="Toggle menu"
+                >
+                  {open ? <X size={22} /> : <Menu size={22} />}
+                </button>
 
-          <li>
-            <Link href="/login" className="hover:text-blue-600">Login</Link>
-          </li>
-        </ul>
+                <div className="hidden md:flex items-center gap-4 ml-2">
+                  {navLinks.slice(3).map((l) => (
+                    <Link key={l.href} href={l.href} className="text-sm text-white/80 hover:text-white transition">
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
+        {/* mobile dropdown */}
+        <div
+          className={`md:hidden origin-top-right transform transition-all ${open ? "scale-y-100 opacity-100" : "scale-y-95 opacity-0 pointer-events-none"}`}
+          style={{ transformOrigin: "top right" }}
         >
-          {open ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
+          <div className="px-4 pt-4 pb-6 bg-gradient-to-b from-[#04202b]/80 to-[#061b2a]/70 border-t border-white/6 backdrop-blur-md">
+            <div className="space-y-3">
+              {navLinks.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  className="block text-white/90 px-3 py-2 rounded-lg hover:bg-white/6 transition"
+                >
+                  {l.label}
+                </Link>
+              ))}
 
-      {/* Mobile Dropdown Menu */}
-      {open && (
-        <ul className="md:hidden bg-white shadow-md px-6 py-4 space-y-4 text-lg font-medium">
-
-          <li>
-            <Link href="/" onClick={() => setOpen(false)} className="hover:text-blue-600">
-              Home
-            </Link>
-          </li>
-
-          <li>
-            <Link href="/about" onClick={() => setOpen(false)} className="hover:text-blue-600">
-              About
-            </Link>
-          </li>
-
-          <li>
-            <Link href="/contact" onClick={() => setOpen(false)} className="hover:text-blue-600">
-              Contact
-            </Link>
-          </li>
-
-          <li>
-            <Link href="/signup" onClick={() => setOpen(false)} className="hover:text-blue-600">
-              Sign Up
-            </Link>
-          </li>
-
-          <li>
-            <Link href="/login" onClick={() => setOpen(false)} className="hover:text-blue-600">
-              Login
-            </Link>
-          </li>
-
-        </ul>
-      )}
-    </nav>
+              <div className="pt-2">
+                <Link
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="block text-center px-4 py-2 rounded-full bg-amber-300 text-black font-semibold shadow-sm"
+                >
+                  Get started
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+      {/* NOTE: no spacer here — layout handles top padding */}
+    </>
   );
-};
-
-export default Navbar;
+}

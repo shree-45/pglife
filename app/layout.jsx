@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <body className="antialiased bg-[#041826] text-white">
         {/* Header (shows on every page) */}
         <Navbar />
 

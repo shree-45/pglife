@@ -24,3 +24,32 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+/* globals.css (add at the end) */
+/* Emergency override to remove stray white header/strip */
+:root, html, body, #__next {
+  background: linear-gradient(180deg, #041024 0%, #08314a 100%) !important;
+  color: #fff !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100% !important;
+}
+
+/* force top fixed elements to be dark/translucent */
+body > * {
+  background: transparent !important;
+}
+
+/* specifically clamp any element near the top with white background */
+body * {
+  background-color: inherit !important;
+}
+
+/* if some element is taking space (spacer), hide it */
+body > :not(nav):not(main):not(footer) {
+  /* only hide elements that are visually empty and large */
+}
+
+/* fallback: force first visible element background to none */
+body > *:first-child {
+  background: transparent !important;
+}
