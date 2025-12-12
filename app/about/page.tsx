@@ -1,12 +1,10 @@
+// app/about/AboutClient.tsx
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Phone,
-  Mail,
-  Instagram,
-  Linkedin,
   Shield,
   Clock,
   Star,
@@ -14,24 +12,17 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-/* 
-  Glassmorphic About Page
-  - Tailwind CSS required
-  - Mobile-first, rounded bubbles, gradient-forward
-  - Place images in public/images/
-*/
-
-/* ---------- Carousel (unchanged behavior, restyled) ---------- */
+/* ---------- Carousel ---------- */
 function Carousel({ images = [], interval = 4000, showDots = true, rounded = true }) {
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
   const len = images.length;
-  const timerRef = useRef(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!len) return;
     if (!paused) {
-      timerRef.current = window.setInterval(() => setIdx((i) => (i + 1) % len), interval);
+      timerRef.current = window.setInterval(() => setIdx((i) => (i + 1) % len), interval) as unknown as number;
     }
     return () => {
       if (timerRef.current) {
@@ -42,7 +33,7 @@ function Carousel({ images = [], interval = 4000, showDots = true, rounded = tru
   }, [paused, interval, len]);
 
   useEffect(() => {
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") setIdx((i) => (i - 1 + len) % len);
       if (e.key === "ArrowRight") setIdx((i) => (i + 1) % len);
     };
@@ -57,15 +48,16 @@ function Carousel({ images = [], interval = 4000, showDots = true, rounded = tru
       className={`relative w-full ${rounded ? "rounded-2xl overflow-hidden" : ""}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      role="region"
       aria-roledescription="carousel"
     >
-      <div className="relative h-64 md:h-72 lg:h-80 bg-gradient-to-b from-white/3 to-transparent">
+      <div className="relative h-64 md:h-72 lg:h-80 bg-gradient-to-b from-white/10 to-transparent">
         {images.map((img, i) => (
           <img
             key={i}
             src={img.src}
             alt={img.alt || `slide-${i + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-600 ${
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
               i === idx ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
             }`}
             loading="lazy"
@@ -105,17 +97,17 @@ function Carousel({ images = [], interval = 4000, showDots = true, rounded = tru
   );
 }
 
-/* ---------- Animated Number (dark theme) ---------- */
-function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }) {
+/* ---------- Animated Number ---------- */
+function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }: { to?: number; suffix?: string; duration?: number }) {
   const [val, setVal] = useState(0);
-  const rafRef = useRef(null);
-  const startRef = useRef(null);
+  const rafRef = useRef<number | null>(null);
+  const startRef = useRef<number | null>(null);
 
   useEffect(() => {
     startRef.current = null;
-    const step = (time) => {
+    const step = (time: number) => {
       if (startRef.current === null) startRef.current = time;
-      const elapsed = time - startRef.current;
+      const elapsed = time - (startRef.current ?? time);
       const progress = Math.min(1, elapsed / duration);
       const cur = Math.round(to * progress);
       setVal(cur);
@@ -131,14 +123,14 @@ function AnimatedNumber({ to = 0, suffix = "", duration = 1200 }) {
 
   return (
     <span className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white">
-      {val}
+      {val.toLocaleString()}
       {suffix}
     </span>
   );
 }
 
-/* ---------- Main About Page (glass + rounded bubbles) ---------- */
-export default function AboutPage() {
+/* ---------- AboutClient (main client UI) ---------- */
+export default function AboutClient() {
   const heroImages = [
     { src: "/images/pg1.jpeg", alt: "PG room 1" },
     { src: "/images/pg2.jpeg", alt: "PG room 2" },
@@ -199,13 +191,13 @@ export default function AboutPage() {
           </div>
 
           <div>
-            <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/6 bg-gradient-to-b from-white/3 to-transparent">
+            <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/6 bg-gradient-to-b from-white/10 to-transparent">
               <Carousel images={heroImages} interval={4800} rounded />
             </div>
           </div>
         </div>
       </section>
-
+<nav></nav>
       {/* mission + how we work: glass split cards */}
       <section id="our-mission" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-2 gap-6">
@@ -229,7 +221,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* stats band - gradient heavy with glass cards */}
+      {/* stats band */}
       <section className="py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 rounded-2xl bg-gradient-to-tr from-[#082033]/60 to-[#07304a]/30 border border-white/6 backdrop-blur">
@@ -249,7 +241,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* values (cards) */}
+      {/* values */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h3 className="text-2xl font-bold mb-6">What makes PG LIFE premium</h3>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -315,7 +307,6 @@ export default function AboutPage() {
       </section>
 
       <style jsx>{`
-        /* small helper for stronger shadow */
         .shadow-2xl { box-shadow: 0 20px 50px rgba(2,6,23,0.6); }
       `}</style>
     </div>
